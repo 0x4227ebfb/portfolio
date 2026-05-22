@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>杨锦涛 · 摄影作品集</title>
+<style>
+  :root {
+    --bg: #050505;
+    --gold: #c9a96e;
+    --cream: #f4f1ea;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #040408;
+    font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  /* ══════════════════════════════════
+     HERO
+     ══════════════════════════════════ */
+  #hero {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    pointer-events: none;
+  }
+  #hero.finished { pointer-events: none; }
+  .hero-half {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    will-change: transform, opacity;
+  }
+  #hero-top    { top: 0;    align-items: flex-end;   padding-bottom: 3.5vh; }
+  #hero-bottom { bottom: 0; align-items: flex-start;  padding-top: 3.5vh; }
+  .hero-name {
+    font-size: clamp(38px, 7vw, 72px);
+    font-weight: 280;
+    color: #1a1a1a;
+    letter-spacing: 0.05em;
+  }
+  .hero-sub {
+    font-size: 13px;
+    font-weight: 420;
+    color: #555;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+  }
+  #hero-line {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+  #hero-line.gone { opacity: 0; }
+
+  /* ══════════════════════════════════
+     SECTION TITLE
+     ══════════════════════════════════ */
+  #section-title {
+    position: fixed;
+    top: 18%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 150;
+    pointer-events: none;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  #section-title.visible { opacity: 1; }
+  #section-title .st-name {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  #section-title .st-cn {
+    font-size: 28px;
+    font-weight: 280;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.06em;
+  }
+
+  /* ══════════════════════════════════
+     CAPSULES
+     ══════════════════════════════════ */
+  #container {
+    position: relative;
+    width: 100%;
+    z-index: 1;
+  }
+  .capsule {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(66vw, 660px);
+    border-radius: 22px;
+    overflow: hidden;
+    cursor: pointer;
+    background: rgba(18,18,18,0.28);
+    backdrop-filter: blur(22px) saturate(190%);
+    -webkit-backdrop-filter: blur(26px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.07);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset, 0 8px 32px rgba(0,0,0,0.4);
+    will-change: transform, height;
+    transition: scale 0.5s cubic-bezier(0.16,1,0.3,1), filter 0.5s ease;
+  }
+  .capsule:hover {
+    scale: 1.035;
+    filter: brightness(1.06) drop-shadow(0 0 26px rgba(170,150,220,0.22));
+  }
+  .capsule img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: grayscale(1) blur(12px);
+    will-change: filter;
+    mask-image: radial-gradient(ellipse 85% 88% at 50% 50%, black 0%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 85% 88% at 50% 50%, black 0%, transparent 100%);
+  }
+
+  /* ══════════════════════════════════
+     SECTION DIVIDER
+     ══════════════════════════════════ */
+  .sec-divider {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(66vw, 660px);
+    text-align: center;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    padding: 30px 0 36px;
+  }
+  .sec-divider.visible { opacity: 1; }
+  .sec-divider .sd-line {
+    width: 60px;
+    height: 1px;
+    margin: 0 auto 20px;
+    background: rgba(201,169,110,0.35);
+  }
+  .sec-divider .sd-name {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .sec-divider .sd-cn {
+    font-size: 26px;
+    font-weight: 280;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.06em;
+  }
+
+  /* ══════════════════════════════════
+     WORK SECTION (different format)
+     ══════════════════════════════════ */
+  .work-card {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(72vw, 700px);
+    border-radius: 18px;
+    background: rgba(22,22,22,0.35);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 40px 44px;
+    color: #bbb;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .work-card.revealed { opacity: 1; }
+  .work-card h3 {
+    font-size: 15px;
+    font-weight: 420;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .work-card .exp-item {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .work-card .exp-item:last-child { border-bottom: none; }
+  .work-card .exp-year {
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 0.08em;
+    min-width: 56px;
+    padding-top: 2px;
+  }
+  .work-card .exp-role {
+    font-size: 15px;
+    color: #ddd;
+    font-weight: 420;
+    margin-bottom: 4px;
+  }
+  .work-card .exp-desc {
+    font-size: 12px;
+    color: #777;
+    line-height: 1.7;
+  }
+  .work-card .more-link {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .work-card .more-link:hover { opacity: 0.6; }
+  .work-gallery {
+    display: none;
+    margin-top: 18px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .work-gallery.open { display: grid; }
+  .work-gallery img {
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: scale 0.3s ease;
+  }
+  .work-gallery img:hover { scale: 1.04; }
+
+  /* ══════════════════════════════════
+     BG AURA + PARTICLES
+     ══════════════════════════════════ */
+  #bg-aura {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  #bg-aura .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    will-change: transform;
+  }
+  .blob-1 {
+    width: 85vw; height: 85vw; max-width: 1000px; max-height: 1000px;
+    top: -20%; left: -20%;
+    background: radial-gradient(circle at 50% 50%, rgba(140,60,200,0.3) 0%, rgba(100,40,150,0.16) 28%, rgba(60,20,100,0.06) 55%, transparent 70%);
+    animation: liquid-1 13s ease-in-out infinite;
+  }
+  .blob-2 {
+    width: 80vw; height: 80vw; max-width: 900px; max-height: 900px;
+    bottom: -18%; right: -18%;
+    background: radial-gradient(circle at 50% 50%, rgba(30,65,200,0.38) 0%, rgba(20,45,150,0.2) 30%, rgba(15,30,90,0.07) 55%, transparent 70%);
+    animation: liquid-2 17s ease-in-out infinite;
+  }
+  .blob-3 {
+    width: 55vw; height: 55vw; max-width: 650px; max-height: 650px;
+    top: 45%; left: -20%;
+    background: radial-gradient(circle at 50% 50%, rgba(160,80,180,0.24) 0%, rgba(110,50,130,0.12) 35%, rgba(60,20,70,0.04) 58%, transparent 66%);
+    animation: liquid-3 15s ease-in-out infinite;
+  }
+  .blob-4 {
+    width: 55vw; height: 55vw; max-width: 620px; max-height: 620px;
+    top: 12%; right: -18%;
+    background: radial-gradient(circle at 50% 50%, rgba(100,70,210,0.22) 0%, rgba(70,40,150,0.1) 32%, rgba(35,15,80,0.03) 55%, transparent 66%);
+    animation: liquid-4 16s ease-in-out infinite;
+  }
+  .ribbon {
+    position: absolute;
+    border-radius: 45% 55% 50% 48%;
+    filter: blur(80px);
+    will-change: transform;
+    opacity: 0.45;
+  }
+  .ribbon-1 {
+    width: 100vw; max-width: 1300px; height: 35vh;
+    top: 15%; left: -5%;
+    background: linear-gradient(150deg, rgba(90,30,200,0.35) 0%, rgba(150,50,180,0.22) 40%, rgba(200,80,140,0.1) 70%, transparent 100%);
+    transform: rotate(-12deg) scaleX(1.6) scaleY(0.45);
+    animation: ribbon-drift-1 20s ease-in-out infinite;
+  }
+  .ribbon-2 {
+    width: 90vw; max-width: 1100px; height: 28vh;
+    bottom: 25%; right: -8%;
+    background: linear-gradient(200deg, rgba(30,70,220,0.35) 0%, rgba(60,40,180,0.2) 35%, rgba(160,60,160,0.1) 60%, transparent 100%);
+    transform: rotate(8deg) scaleX(1.5) scaleY(0.4);
+    animation: ribbon-drift-2 22s ease-in-out infinite;
+  }
+  @keyframes liquid-1 {
+    0%,100% { transform: translate(0,0) scale(1) rotate(0deg); }
+    20%     { transform: translate(6vw,4vh) scale(1.12) rotate(5deg); }
+    45%     { transform: translate(-3vw,8vh) scale(0.9) rotate(-4deg); }
+    65%     { transform: translate(-7vw,-2vh) scale(1.08) rotate(6deg); }
+    85%     { transform: translate(3vw,-5vh) scale(0.94) rotate(-2deg); }
+  }
+  @keyframes liquid-2 {
+    0%,100% { transform: translate(0,0) scale(1) rotate(0deg); }
+    30%     { transform: translate(-7vw,-5vh) scale(1.14) rotate(-6deg); }
+    55%     { transform: translate(3vw,-8vh) scale(0.88) rotate(4deg); }
+    80%     { transform: translate(6vw,3vh) scale(1.06) rotate(-3deg); }
+  }
+  @keyframes liquid-3 {
+    0%,100% { transform: translate(0,0) scale(1) rotate(0deg); }
+    35%     { transform: translate(8vw,-3vh) scale(1.1) rotate(6deg); }
+    70%     { transform: translate(-3vw,6vh) scale(0.92) rotate(-5deg); }
+  }
+  @keyframes liquid-4 {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50%     { transform: translate(-5vw,-6vh) scale(1.13); }
+  }
+  @keyframes ribbon-drift-1 {
+    0%,100% { transform: rotate(-12deg) scaleX(1.6) scaleY(0.45) translate(0,0); }
+    33%     { transform: rotate(-8deg) scaleX(1.7) scaleY(0.5) translate(3vw,2vh); }
+    66%     { transform: rotate(-16deg) scaleX(1.5) scaleY(0.4) translate(-4vw,-3vh); }
+  }
+  @keyframes ribbon-drift-2 {
+    0%,100% { transform: rotate(8deg) scaleX(1.5) scaleY(0.4) translate(0,0); }
+    40%     { transform: rotate(14deg) scaleX(1.6) scaleY(0.45) translate(-5vw,-1vh); }
+    75%     { transform: rotate(3deg) scaleX(1.4) scaleY(0.35) translate(4vw,3vh); }
+  }
+
+  /* ── Particles ─── */
+  #particles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .bokeh {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(6px);
+    animation: bokeh-float linear infinite;
+  }
+  @keyframes bokeh-float {
+    0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+    8%   { opacity: 0.45; }
+    85%  { opacity: 0.25; }
+    100% { transform: translateY(-105vh) translateX(40px) scale(0.6); opacity: 0; }
+  }
+
+  /* ── Grain ─── */
+  #grain {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    animation: grain-shift 0.5s steps(3) infinite;
+  }
+  @keyframes grain-shift {
+    0%,100% { background-position: 0 0; }
+    33%     { background-position: 40px 20px; }
+    66%     { background-position: 20px 40px; }
+  }
+
+  /* ══════════════════════════════════
+     INFO PANEL
+     ══════════════════════════════════ */
+  #info-panel {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: rgba(18,18,18,0.55);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 6px;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    color: #999;
+    transition: opacity 0.6s ease, color 0.6s ease;
+    min-width: 180px;
+  }
+  #info-panel.light-mode {
+    background: rgba(240,236,228,0.78);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border-color: rgba(0,0,0,0.08);
+    color: #555;
+  }
+  #info-panel a { color: var(--gold); text-decoration: none; transition: opacity 0.2s; }
+  #info-panel a:hover { opacity: 0.7; }
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 12px;
+    border-radius: 10px;
+    transition: background 0.25s ease;
+    white-space: nowrap;
+  }
+  .info-row:hover { background: rgba(255,255,255,0.04); }
+  .info-row svg { flex-shrink: 0; width: 14px; height: 14px; opacity: 0.5; }
+  #info-panel.light-mode .info-row:hover { background: rgba(0,0,0,0.04); }
+  .wechat-row { position: relative; cursor: pointer; }
+  .qr-popup {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 8px;
+    width: 260px;
+    height: 260px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16,1,0.3,1);
+  }
+  .qr-popup img { width: 100%; height: 100%; object-fit: contain; }
+  .wechat-row:hover .qr-popup, .wechat-row.active .qr-popup { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+  /* ══════════════════════════════════
+     SCROLL HINT
+     ══════════════════════════════════ */
+  #scroll-hint {
+    position: fixed;
+    bottom: 38px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    color: rgba(0,0,0,0.35);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    pointer-events: none;
+    transition: opacity 0.8s ease 0.3s, color 0.8s ease;
+  }
+  #scroll-hint.dark-mode { color: rgba(255,255,255,0.2); }
+  #scroll-hint.faded { opacity: 0; }
+
+  /* ══════════════════════════════════
+     LIGHTBOX
+     ══════════════════════════════════ */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(0,0,0,0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+  }
+  .lightbox.open { opacity: 1; pointer-events: all; }
+  .lightbox img {
+    max-width: 88vw;
+    max-height: 82vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+    transform: scale(0.9);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .lightbox.open img { transform: scale(1); }
+  .lightbox .ctrl {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: rgba(255,255,255,0.7);
+    background: rgba(18,18,18,0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 50%;
+    transition: all 0.25s ease;
+    user-select: none;
+  }
+  .lightbox .ctrl:hover { color: #fff; background: rgba(18,18,18,0.75); border-color: rgba(255,255,255,0.14); }
+  .lightbox .close-btn { top: 22px; right: 26px; width: 42px; height: 42px; font-size: 22px; font-weight: 300; }
+  .lightbox .nav-btn { top: 50%; width: 46px; height: 46px; font-size: 26px; font-weight: 200; }
+  .lightbox .prev-btn { left: 20px; }
+  .lightbox .next-btn { right: 20px; }
+  .lightbox .counter {
+    position: absolute;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: #555;
+    background: rgba(18,18,18,0.45);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 6px 16px;
+  }
+</style>
+</head>
+<body>
+
+<div id="bg-aura">
+  <div class="blob blob-1"></div><div class="blob blob-2"></div>
+  <div class="blob blob-3"></div><div class="blob blob-4"></div>
+  <div class="ribbon ribbon-1"></div><div class="ribbon ribbon-2"></div>
+</div>
+<div id="particles"></div>
+<div id="grain"></div>
+
+<div id="hero">
+  <div id="hero-top" class="hero-half"><span class="hero-name">杨锦涛</span></div>
+  <div id="hero-line"></div>
+  <div id="hero-bottom" class="hero-half"><span class="hero-sub">摄影作品集</span></div>
+</div>
+
+<div id="section-title"><div class="st-name"></div><div class="st-cn"></div></div>
+<div id="scroll-hint">滚动探索</div>
+
+<div id="info-panel" class="light-mode">
+  <div class="info-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>17330528978</span></div>
+  <a class="info-row" href="https://space.bilibili.com/544194010" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.396.786 1.894.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.13.786-1.894v-7.52c-.017-.764-.28-1.396-.786-1.893-.507-.498-1.134-.756-1.88-.774zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/></svg><span>B站主页</span></a>
+  <div class="info-row wechat-row" id="wechat-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>微信</span><div class="qr-popup"><img src="微信.jpg" alt="微信名片"></div></div>
+</div>
+
+<div id="container"></div>
+
+<div class="lightbox" id="lightbox">
+  <div class="ctrl close-btn" id="lb-close">&times;</div>
+  <div class="ctrl nav-btn prev-btn" id="lb-prev">&#8249;</div>
+  <div class="ctrl nav-btn next-btn" id="lb-next">&#8250;</div>
+  <img src="" alt="" id="lb-img"><div class="counter" id="lb-counter"></div>
+</div>
+
+<script>
+// ========================
+// SECTION CONFIG
+//   Put numbered photos in each folder.
+//   Architecture & Portrait use capsule layout.
+//   Work uses a summary card + more gallery.
+// ========================
+const SECTIONS = [
+  {
+    id: 'architecture',
+    name: 'Architecture',
+    nameCN: '建筑',
+    type: 'capsule',
+    photos: [
+      { src: 'architecture/1.jpg', caption: '1' },
+      { src: 'architecture/163eda792a20ee88ef7fb2d1eb6ee3f8.jpg', caption: '163eda792a20ee88ef7fb2d1eb6ee3f8' },
+      { src: 'architecture/2.jpg', caption: '2' },
+      { src: 'architecture/3.jpg', caption: '3' },
+      { src: 'architecture/4.png', caption: '4' },
+    ]
+  },
+  {
+    id: 'portrait',
+    name: 'Portrait',
+    nameCN: '人像',
+    type: 'capsule',
+    photos: [
+      { src: 'portrait/1.jpg', caption: '1' },
+      { src: 'portrait/2.jpg', caption: '2' },
+      { src: 'portrait/3.jpg', caption: '3' },
+      { src: 'portrait/4.jpg', caption: '4' },
+      { src: 'portrait/5.jpg', caption: '5' },
+      { src: 'portrait/DSC05344.jpg', caption: 'DSC05344' },
+      { src: 'portrait/DSC06661_(2).jpg', caption: 'DSC06661 (2)' },
+      { src: 'portrait/DSC06781.jpg', caption: 'DSC06781' },
+      { src: 'portrait/DSC06813.jpg', caption: 'DSC06813' },
+    ]
+  },
+  {
+    id: 'work',
+    name: 'Work',
+    nameCN: '工作经历',
+    type: 'summary',
+    // Edit your campus experience here:
+    experiences: [
+      { year: '2021', role: 'B站账号运营', desc: '经营B站账号，累计播放量达93w+。' },
+      { year: '2024', role: '校园摄影师', desc: '负责校团委活动拍摄、后期处理，累计完成30+场活动纪实。' },
+      { year: '2025', role: '新媒体运营', desc: '运营学校视频账号，策划摄影相关视频内容。' },
+      { year: '2026', role: '摄影社社长', desc: '组织校园摄影展，带领团队完成多个专题拍摄项目。' },
+    ],
+    morePhotos: [
+      { src: 'work/1.png', caption: '1' },
+      { src: 'work/2.jpg', caption: '2' },
+      { src: 'work/3.jpg', caption: '3' },
+      { src: 'work/4.jpg', caption: '4' },
+      { src: 'work/5.jpg', caption: '5' },
+      { src: 'work/6.jpg', caption: '6' },
+      { src: 'work/7.jpg', caption: '7' },
+      { src: 'work/8.jpg', caption: '8' },
+    ]
+  }
+];
+
+// ========================
+// CONFIG
+// ========================
+const HERO_ZONE    = 700;
+const FIRST_START  = 380;  // first section starts earlier, overlapping hero
+const ZONE_PX      = 250;  // px of scroll to fully expand one capsule
+const COLLAPSED_H  = 62;
+const GAP_TIGHT    = 8;
+const GAP_LOOSE    = 16;
+const MAX_EXP_H    = 260;  // cap expanded height to limit displacement
+const SEC_GAP      = 400;  // gap between sections (room for divider)
+let   TOP_PAD      = 800;
+
+// ========================
+// Accumulate all photos for lightbox & compute zones
+// ========================
+const allPhotos = []; // flat list for lightbox
+const sectionMeta = []; // per-section scroll info
+
+function buildSectionMeta() {
+  sectionMeta.length = 0;
+  allPhotos.length = 0;
+  let scrollOffset = FIRST_START;
+
+  SECTIONS.forEach((sec) => {
+    const meta = { id: sec.id, type: sec.type, name: sec.name, nameCN: sec.nameCN, capsuleStart: scrollOffset, capsuleCount: 0, photos: [], capsules: [], totalZonePx: 0 };
+    if (sec.type === 'capsule' && sec.photos && sec.photos.length > 0) {
+      meta.capsuleCount = sec.photos.length;
+      const N = sec.photos.length;
+      let accum = 0;
+      sec.photos.forEach((p, i) => {
+        // Stagger: first capsule very fast, rest ramp gradually
+        const factor = 0.3 + (i / Math.max(N - 1, 1)) * 1.7;
+        const zp = Math.round(ZONE_PX * factor);
+        meta.capsules.push({ zonePx: zp, startOffset: accum });
+        accum += zp;
+        const entry = { ...p, sectionId: sec.id, globalIdx: allPhotos.length };
+        meta.photos.push(entry);
+        allPhotos.push(entry);
+      });
+      meta.totalZonePx = accum;
+      scrollOffset += accum + SEC_GAP;
+    } else if (sec.type === 'summary') {
+      meta.capsuleCount = 0;
+      scrollOffset += 600 + SEC_GAP;
+      const photos = sec.morePhotos || [];
+      photos.forEach(p => {
+        allPhotos.push({ ...p, sectionId: sec.id, globalIdx: allPhotos.length });
+      });
+    }
+    sectionMeta.push(meta);
+  });
+
+  // Total scroll = offset + viewport buffer
+  return scrollOffset + window.innerHeight + 200;
+}
+
+// ========================
+// DOM
+// ========================
+const container    = document.getElementById('container');
+const hero         = document.getElementById('hero');
+const heroTop      = document.getElementById('hero-top');
+const heroBottom   = document.getElementById('hero-bottom');
+const heroLine     = document.getElementById('hero-line');
+const hint         = document.getElementById('scroll-hint');
+const infoPanel    = document.getElementById('info-panel');
+const secTitle     = document.getElementById('section-title');
+const secTitleName = secTitle.querySelector('.st-name');
+const secTitleCN   = secTitle.querySelector('.st-cn');
+
+let capsuleEls   = [];
+let capsuleMetas = []; // { sectionId, photoIdx, expandedHeight }
+let secDividers  = []; // { el, y }
+let workCardEl   = null;
+let workGalleryEl = null;
+
+// ── Easing ────────────────────────
+function easeOut(t) {
+  if (t <= 0) return 0; if (t >= 1) return 1;
+  return 1 - Math.pow(1 - t, 4.5);
+}
+function heroEase(t) {
+  if (t <= 0) return 0; if (t >= 1) return 1;
+  return 1 - Math.pow(1 - t, 2.2);
+}
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+// ── Progress for a capsule within its section (per-capsule stagger) ──
+function getCapsuleProgress(secMeta, idx, scrollY) {
+  const cd = secMeta.capsules && secMeta.capsules[idx];
+  if (!cd) {
+    // fallback: uniform spacing
+    const start = secMeta.capsuleStart + idx * ZONE_PX;
+    const raw = (scrollY - start) / ZONE_PX;
+    return Math.max(0, Math.min(1, raw));
+  }
+  const start = secMeta.capsuleStart + cd.startOffset;
+  const raw = (scrollY - start) / cd.zonePx;
+  return Math.max(0, Math.min(1, raw));
+}
+
+// ── Which section is visible for title? ──
+function getActiveSection(scrollY) {
+  if (scrollY < FIRST_START * 0.7) return null;
+  for (let i = 0; i < sectionMeta.length; i++) {
+    const m = sectionMeta[i];
+    const secStart = m.capsuleStart;
+    const secEnd = secStart + (m.capsuleCount > 0 ? m.totalZonePx : 600);
+    if (scrollY >= secStart - 100 && scrollY < secEnd + 200) return m;
+    // For summary sections, show title earlier
+    if (m.type === 'summary' && scrollY >= secStart - 200 && scrollY < secEnd + 400) return m;
+  }
+  return null;
+}
+
+// ── Build capsules ───────────────
+function buildAllCapsules() {
+  container.innerHTML = '';
+  capsuleEls = [];
+  capsuleMetas = [];
+  const displayW = Math.min(window.innerWidth * 0.66, 660);
+
+  const totalScroll = buildSectionMeta();
+  secDividers = [];
+
+  sectionMeta.forEach((meta, mi) => {
+    meta.photos.forEach((photo, idx) => {
+      const probe = new Image();
+      probe.onload  = () => {
+        const i = capsuleMetas.findIndex(m => m.photo === photo);
+        if (i >= 0) capsuleMetas[i].expH = displayW / (probe.naturalWidth / probe.naturalHeight);
+      };
+      probe.onerror = () => {
+        const i = capsuleMetas.findIndex(m => m.photo === photo);
+        if (i >= 0) capsuleMetas[i].expH = displayW * 0.7;
+      };
+      probe.src = photo.src;
+
+      const el = document.createElement('div');
+      el.className = 'capsule';
+      el.innerHTML = `<img src="${photo.src}" alt="${photo.caption}" loading="lazy">`;
+      el.addEventListener('click', () => openLightbox(photo.globalIdx));
+      container.appendChild(el);
+      capsuleEls.push(el);
+      capsuleMetas.push({ el, sectionId: meta.id, photo, expH: null });
+    });
+
+    // Insert section divider after each capsule section (not after work)
+    if (meta.type === 'capsule' && mi < sectionMeta.length - 1) {
+      const div = document.createElement('div');
+      div.className = 'sec-divider';
+      const nextMeta = sectionMeta[mi + 1];
+      div.innerHTML = `<div class="sd-line"></div><div class="sd-name">${nextMeta.name}</div><div class="sd-cn">${nextMeta.nameCN}</div>`;
+      container.appendChild(div);
+      const nextId = sectionMeta[mi + 1].id;
+      secDividers.push({ el: div, afterSection: meta.id, nextSectionId: nextId });
+    }
+  });
+
+  // Build work card
+  buildWorkCard();
+  container.style.height = totalScroll + 'px';
+}
+
+function buildWorkCard() {
+  const workSec = SECTIONS.find(s => s.id === 'work');
+  if (!workSec) return;
+
+  workCardEl = document.createElement('div');
+  workCardEl.className = 'work-card';
+  let expHTML = '';
+  (workSec.experiences || []).forEach(exp => {
+    expHTML += `<div class="exp-item"><span class="exp-year">${exp.year}</span><div><div class="exp-role">${exp.role}</div><div class="exp-desc">${exp.desc}</div></div></div>`;
+  });
+  workCardEl.innerHTML = `<h3>工作经历</h3>${expHTML}<span class="more-link" id="more-toggle">作品图库 −</span><div class="work-gallery open" id="work-gallery"></div>`;
+  container.appendChild(workCardEl);
+
+  // "more" gallery
+  const gallery = workCardEl.querySelector('#work-gallery');
+  const morePhotos = workSec.morePhotos || [];
+  if (morePhotos.length > 0) {
+    morePhotos.forEach(p => {
+      const img = document.createElement('img');
+      img.src = p.src;
+      img.alt = p.caption || '';
+      img.addEventListener('click', () => {
+        const gIdx = allPhotos.findIndex(ap => ap.src === p.src);
+        if (gIdx >= 0) openLightbox(gIdx);
+      });
+      gallery.appendChild(img);
+    });
+  }
+
+  document.getElementById('more-toggle').addEventListener('click', function() {
+    const g = document.getElementById('work-gallery');
+    const expanded = g.classList.contains('open');
+    g.classList.toggle('open');
+    this.textContent = expanded ? '作品图库 +' : '作品图库 −';
+  });
+}
+
+// ── Render ───────────────────────
+function update(scrollY) {
+  // Hero
+  const heroProgress = Math.max(0, Math.min(1, scrollY / HERO_ZONE));
+  const heroEased = heroEase(heroProgress);
+  const splitDist = heroEased * 75;
+  heroTop.style.transform    = `translateY(-${splitDist}vh)`;
+  heroBottom.style.transform = `translateY(${splitDist}vh)`;
+  const panelAlpha = 1 - heroEased * 0.85;
+  heroTop.style.opacity    = panelAlpha;
+  heroBottom.style.opacity = panelAlpha;
+  heroLine.classList.toggle('gone', heroEased > 0.15);
+  hero.classList.toggle('finished', heroEased > 0.95);
+
+  const dark = heroEased > 0.5;
+  hint.classList.toggle('dark-mode', dark);
+  infoPanel.classList.toggle('light-mode', !dark);
+
+  // Section title
+  const activeSec = getActiveSection(scrollY);
+  const showTitle = activeSec && scrollY > FIRST_START;
+  secTitle.classList.toggle('visible', !!showTitle);
+  if (activeSec && showTitle) {
+    secTitleName.textContent = activeSec.name;
+    secTitleCN.textContent   = activeSec.nameCN;
+  }
+
+  // Capsules + Dividers
+  let y = TOP_PAD;
+  const sectionEndY = {}; // sectionId -> y after last capsule
+  let lastSectionId = null;
+
+  capsuleMetas.forEach((cm, ci) => {
+    const secMeta = sectionMeta.find(m => m.id === cm.sectionId);
+    if (!secMeta) return;
+    const idx = secMeta.photos.indexOf(cm.photo);
+    if (idx < 0) return;
+
+    // Add section gap when transitioning between sections
+    if (lastSectionId && cm.sectionId !== lastSectionId) {
+      y += 80; // visual gap between sections
+    }
+
+    const raw   = getCapsuleProgress(secMeta, idx, scrollY);
+    const t     = easeOut(raw);
+    const fullH = Math.min(cm.expH || 440, MAX_EXP_H);
+    const h     = lerp(COLLAPSED_H, fullH, t);
+    const gap   = lerp(GAP_TIGHT, GAP_LOOSE, t);
+
+    cm.el.style.height = h + 'px';
+    cm.el.style.transform = `translateX(-50%) translateY(${y}px)`;
+    cm.el.style.zIndex = capsuleEls.length - ci;
+
+    const glassA  = lerp(0.28, 0.015, t);
+    const blurV   = lerp(22, 0, t);
+    const borderA = lerp(0.07, 0.02, t);
+    const shadowA = lerp(0.4, 0.03, t);
+    cm.el.style.background           = `rgba(18,18,18,${glassA})`;
+    cm.el.style.backdropFilter       = t > 0.97 ? 'none' : `blur(${blurV}px) saturate(${lerp(190,100,t)}%)`;
+    cm.el.style.webkitBackdropFilter = t > 0.97 ? 'none' : `blur(${blurV}px) saturate(${lerp(160,100,t)}%)`;
+    cm.el.style.borderColor = `rgba(255,255,255,${borderA})`;
+    cm.el.style.boxShadow   = `0 0 0 1px rgba(255,255,255,${lerp(0.03,0,t)}) inset, 0 8px 32px rgba(0,0,0,${shadowA})`;
+
+    const img    = cm.el.querySelector('img');
+    const gray   = 1 - t;
+    const blurPx = 12 * (1 - t);
+    img.style.filter = `grayscale(${gray}) blur(${blurPx}px)`;
+
+    y += h + gap;
+
+    // Record end-of-section y
+    const isLastInSection = idx === secMeta.photos.length - 1;
+    if (isLastInSection) {
+      sectionEndY[cm.sectionId] = y;
+    }
+    lastSectionId = cm.sectionId;
+  });
+
+  // Position dividers
+  secDividers.forEach((sd) => {
+    const afterY = sectionEndY[sd.afterSection];
+    if (afterY != null) {
+      sd.el.style.top = (afterY + 20) + 'px';
+      const nextMeta = sectionMeta.find(m => m.id === sd.nextSectionId);
+      const showDivider = nextMeta && scrollY > nextMeta.capsuleStart - 200;
+      sd.el.classList.toggle('visible', !!showDivider);
+    }
+  });
+
+  // Work card — positioned at a fixed scroll zone, slow reveal
+  if (workCardEl) {
+    const workMeta = sectionMeta.find(m => m.id === 'work');
+    if (workMeta) {
+      const ws = workMeta.capsuleStart;
+      const cardY = ws + 480; // card sits well into the work scroll zone
+      const progress = Math.max(0, Math.min(1, (scrollY - ws) / 500));
+      workCardEl.style.top = cardY + 'px';
+      workCardEl.classList.toggle('revealed', progress > 0.1);
+      if (progress > 0) {
+        workCardEl.style.opacity = Math.min(1, progress * 1.3);
+      }
+    }
+  }
+
+  hint.classList.toggle('faded', scrollY > 60);
+}
+
+// ── RAF ──────────────────────────
+function tick() {
+  update(window.scrollY);
+  requestAnimationFrame(tick);
+}
+
+// ── Particles ────────────────────
+function spawnParticles() {
+  const c = document.getElementById('particles');
+  const colors = ['rgba(170,150,210,0.18)','rgba(190,160,200,0.15)','rgba(150,170,220,0.2)','rgba(170,155,205,0.14)'];
+  for (let i = 0; i < 14; i++) {
+    const b = document.createElement('div');
+    b.className = 'bokeh';
+    const size = Math.random() * 16 + 10;
+    b.style.width = size + 'px'; b.style.height = size + 'px';
+    b.style.left = Math.random() * 100 + '%';
+    b.style.top  = Math.random() * 100 + '%';
+    b.style.background = colors[Math.floor(Math.random() * colors.length)];
+    b.style.animationDuration = (Math.random() * 18 + 14) + 's';
+    b.style.animationDelay    = (Math.random() * 16) + 's';
+    b.style.boxShadow = `0 0 ${Math.random()*8+4}px ${colors[Math.floor(Math.random()*colors.length)]}`;
+    c.appendChild(b);
+  }
+}
+
+// ── Init ─────────────────────────
+function computeTopPad() {
+  // Place collapsed stack center-screen when expansion begins
+  TOP_PAD = FIRST_START + window.innerHeight * 0.5;
+}
+
+function init() {
+  computeTopPad();
+  buildAllCapsules();
+  spawnParticles();
+  update(0);
+  requestAnimationFrame(tick);
+}
+
+window.addEventListener('resize', () => {
+  computeTopPad();
+  const displayW = Math.min(window.innerWidth * 0.66, 660);
+  capsuleMetas.forEach(cm => {
+    const img = cm.el.querySelector('img');
+    if (img && img.naturalWidth) cm.expH = displayW / (img.naturalWidth / img.naturalHeight);
+  });
+  // Recalc container height using stored totalZonePx
+  let so = FIRST_START;
+  sectionMeta.forEach(m => {
+    if (m.capsuleCount > 0) so += m.totalZonePx + SEC_GAP;
+    else if (m.type === 'summary') so += 600 + SEC_GAP;
+  });
+  container.style.height = (so + window.innerHeight + 200) + 'px';
+});
+
+// ── WeChat QR ────────────────────
+document.getElementById('wechat-row').addEventListener('click', function(e) {
+  this.classList.toggle('active'); e.stopPropagation();
+});
+document.addEventListener('click', () => document.getElementById('wechat-row').classList.remove('active'));
+
+// ── Lightbox ─────────────────────
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lb-img');
+const lbCounter = document.getElementById('lb-counter');
+let currentIdx = -1;
+
+function openLightbox(idx) {
+  if (allPhotos.length === 0) return;
+  currentIdx = idx;
+  lbImg.src = allPhotos[idx].src;
+  lbCounter.textContent = `${idx + 1} / ${allPhotos.length}`;
+  lightbox.classList.add('open');
+}
+function closeLightbox() { lightbox.classList.remove('open'); currentIdx = -1; }
+function navLightbox(dir) {
+  currentIdx = (currentIdx + dir + allPhotos.length) % allPhotos.length;
+  lbImg.src = allPhotos[currentIdx].src;
+  lbCounter.textContent = `${currentIdx + 1} / ${allPhotos.length}`;
+}
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); navLightbox(-1); });
+document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); navLightbox(1); });
+lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (currentIdx < 0) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') navLightbox(-1);
+  if (e.key === 'ArrowRight') navLightbox(1);
+});
+
+init();
+</script>
+</body>
+</html>
