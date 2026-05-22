@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>杨锦涛 · 摄影作品集</title>
+<style>
+  :root {
+    --bg: #080808;
+    --glass: rgba(18, 18, 18, 0.65);
+    --glass-hover: rgba(18, 18, 18, 0.85);
+    --text: #b0b0b0;
+    --text-dim: #5a5a5a;
+    --gold: #c9a96e;
+    --gold-glow: rgba(201, 169, 110, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    cursor: default;
+  }
+
+  /* ── Glass header ───────────────── */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 32px 40px 20px;
+    text-align: center;
+    background: rgba(8,8,8,0.72);
+    backdrop-filter: saturate(180%) blur(30px);
+    -webkit-backdrop-filter: saturate(180%) blur(30px);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.5s ease;
+  }
+  .header .name {
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: #e8e8e8;
+  }
+  .header .subtitle {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 4px;
+  }
+  .header .dot {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    margin: 10px auto 0;
+    opacity: 0.5;
+  }
+
+  /* ── Gallery ────────────────────── */
+  .gallery-wrap {
+    max-width: 1340px;
+    margin: 0 auto;
+    padding: 36px 28px 80px;
+  }
+  .gallery {
+    columns: 3;
+    column-gap: 22px;
+  }
+  @media (max-width: 1100px) { .gallery { columns: 2; } }
+  @media (max-width: 640px)  { .gallery { columns: 1; } }
+
+  .item {
+    break-inside: avoid;
+    margin-bottom: 22px;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(36px) scale(0.97);
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+  }
+  .item.revealed {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    transition: transform 0.55s cubic-bezier(0.25, 0.1, 0.1, 1),
+                filter 0.55s ease;
+  }
+  .item:hover img {
+    transform: scale(1.04);
+  }
+
+  /* glass caption overlay */
+  .item .label {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    padding: 9px 14px;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    color: #aaa;
+    background: rgba(12,12,12,0.62);
+    backdrop-filter: saturate(140%) blur(18px);
+    -webkit-backdrop-filter: saturate(140%) blur(18px);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 7px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+  .item:hover .label {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Lightbox ──────────────────── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.94);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .lightbox.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .lightbox img {
+    max-width: 88vw;
+    max-height: 82vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+    transform: scale(0.9);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .lightbox.open img { transform: scale(1); }
+
+  /* glass controls */
+  .lightbox .ctrl {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: rgba(255,255,255,0.7);
+    background: rgba(18,18,18,0.5);
+    backdrop-filter: saturate(140%) blur(20px);
+    -webkit-backdrop-filter: saturate(140%) blur(20px);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 50%;
+    transition: all 0.25s ease;
+    user-select: none;
+  }
+  .lightbox .ctrl:hover {
+    color: #fff;
+    background: rgba(18,18,18,0.75);
+    border-color: rgba(255,255,255,0.14);
+  }
+  .lightbox .close-btn {
+    top: 22px;
+    right: 26px;
+    width: 42px;
+    height: 42px;
+    font-size: 22px;
+    font-weight: 300;
+  }
+  .lightbox .nav-btn {
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+    font-size: 26px;
+    font-weight: 200;
+  }
+  .lightbox .prev-btn { left: 20px; }
+  .lightbox .next-btn { right: 20px; }
+  .lightbox .counter {
+    position: absolute;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: #555;
+    background: rgba(18,18,18,0.45);
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 6px 16px;
+  }
+
+  /* ── Footer ────────────────────── */
+  .footer {
+    text-align: center;
+    padding: 50px 24px 70px;
+    color: var(--text-dim);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+  .footer .bilibili {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 22px;
+    border-radius: 22px;
+    background: rgba(18,18,18,0.45);
+    backdrop-filter: saturate(140%) blur(16px);
+    -webkit-backdrop-filter: saturate(140%) blur(16px);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: #999;
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+  }
+  .footer .bilibili:hover {
+    border-color: rgba(201,169,110,0.3);
+    color: var(--gold);
+    background: rgba(18,18,18,0.7);
+  }
+  .footer .bilibili svg { opacity: 0.6; transition: opacity 0.3s; }
+  .footer .bilibili:hover svg { opacity: 1; }
+  .footer .note {
+    font-size: 11px;
+    color: #444;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Glass Header ────────────────── -->
+<header class="header">
+  <div class="name">杨锦涛</div>
+  <div class="subtitle">Photography Portfolio</div>
+  <div class="dot"></div>
+</header>
+
+<!-- ── Gallery ─────────────────────── -->
+<div class="gallery-wrap">
+  <div class="gallery" id="gallery"></div>
+</div>
+
+<!-- ── Footer ──────────────────────── -->
+<footer class="footer">
+  <a class="bilibili" href="https://space.bilibili.com/" target="_blank" rel="noopener">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.396.786 1.894.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.13.786-1.894v-7.52c-.017-.764-.28-1.396-.786-1.893-.507-.498-1.134-.756-1.88-.774zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/></svg>
+    B站主页
+  </a>
+  <div class="note">Yang Jintao &middot; Photography</div>
+</footer>
+
+<!-- ── Lightbox ────────────────────── -->
+<div class="lightbox" id="lightbox">
+  <div class="ctrl close-btn" id="lb-close">&times;</div>
+  <div class="ctrl nav-btn prev-btn" id="lb-prev">&#8249;</div>
+  <div class="ctrl nav-btn next-btn" id="lb-next">&#8250;</div>
+  <img src="" alt="" id="lb-img">
+  <div class="counter" id="lb-counter"></div>
+</div>
+
+<script>
+// ========================
+// IMAGE LIST — auto-filled by generate.py
+// ========================
+const WORKS = [
+    { src: 'images/8cf4d4b1c41a1afc201defa255380a7a.png', caption: '8cf4d4b1c41a1afc201defa255380a7a' },
+    { src: 'images/a2a2db5dad7eb3e87ca40c78c01db02f.jpg', caption: 'a2a2db5dad7eb3e87ca40c78c01db02f' },
+    { src: 'images/DSC00352.jpg', caption: 'DSC00352' },
+    { src: 'images/DSC09281.jpg', caption: 'DSC09281' },
+    { src: 'images/DSC096111172.jpg', caption: 'DSC096111172' },
+    { src: 'images/DSC097610-Pano.jpg', caption: 'DSC097610 Pano' },
+    { src: 'images/DSC097716.jpg', caption: 'DSC097716' },
+  ];
+
+// ========================
+// Build Gallery
+// ========================
+const gallery = document.getElementById('gallery');
+
+WORKS.forEach((work) => {
+  const item = document.createElement('div');
+  item.className = 'item';
+  item.innerHTML = `
+    <img src="${work.src}" alt="${work.caption}" loading="lazy">
+    <div class="label">${work.caption}</div>
+  `;
+  item.addEventListener('click', () => openLightbox(work));
+  gallery.appendChild(item);
+});
+
+// ========================
+// Staggered Reveal (Apple spring)
+// ========================
+const items = document.querySelectorAll('.item');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const idx = Array.from(items).indexOf(entry.target);
+      entry.target.style.transitionDelay = `${idx * 60}ms`;
+      entry.target.classList.add('revealed');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+items.forEach((el) => observer.observe(el));
+
+// ========================
+// Lightbox
+// ========================
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lb-img');
+const lbCounter = document.getElementById('lb-counter');
+let currentIdx = -1;
+
+function openLightbox(work) {
+  currentIdx = WORKS.indexOf(work);
+  lbImg.src = work.src;
+  lbCounter.textContent = `${currentIdx + 1} / ${WORKS.length}`;
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  document.body.style.overflow = '';
+  currentIdx = -1;
+}
+
+function navLightbox(dir) {
+  currentIdx = (currentIdx + dir + WORKS.length) % WORKS.length;
+  const w = WORKS[currentIdx];
+  lbImg.src = w.src;
+  lbCounter.textContent = `${currentIdx + 1} / ${WORKS.length}`;
+}
+
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-prev').addEventListener('click', (e) => { e.stopPropagation(); navLightbox(-1); });
+document.getElementById('lb-next').addEventListener('click', (e) => { e.stopPropagation(); navLightbox(1); });
+lightbox.addEventListener('click', (e) => {
+  if (e.target === lightbox) closeLightbox();
+});
+document.addEventListener('keydown', (e) => {
+  if (currentIdx < 0) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') navLightbox(-1);
+  if (e.key === 'ArrowRight') navLightbox(1);
+});
+</script>
+
+</body>
+</html>
